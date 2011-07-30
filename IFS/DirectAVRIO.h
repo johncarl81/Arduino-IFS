@@ -17,6 +17,7 @@ private:
 	void sendData(byte data);
 	void sendCMD(byte data);
 	void setPixel2(byte r,byte g,byte b);
+	bool withinBounds(int value);
 };
 
 #endif

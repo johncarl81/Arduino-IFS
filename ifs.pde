@@ -1,7 +1,8 @@
 #include <DirectAVRIO.h>
 #include <Point.h>
+#include <IFS.h>
 
-DirectAVRIO renderer;
+
 
 //thin dragon
 double d1affine[2 * 7] = {
@@ -81,6 +82,8 @@ int affineSizes[sizeof(affineTrans)/sizeof(double*)] =
 double* affine = d1affine;
 int affineSize = sizeof(*affine);
 
+DirectAVRIO renderer;
+IFS ifs(affine, affineSize);
 Point point;
 double offset[3];
 double scale[3];
@@ -119,14 +122,8 @@ void setup () {
 
 void setupScale(){
   for(int i = 0; i < 500; i++){
-
-    int a = randomAffine();
-
-    double x1 = ((getAffine(a, 0) * point.getX()) + (getAffine(a, 1) * point.getY()) + (getAffine(a, 4)));
-    double y1 = ((getAffine(a, 2) * point.getX()) + (getAffine(a, 3) * point.getY()) + (getAffine(a, 5)));
-
-    point.setX(int(x1));
-    point.setY(int(y1));
+    
+    point = ifs.next(point);
 
     if(point.getX() > max[0]){
       max[0] = point.getX();
@@ -146,99 +143,19 @@ void setupScale(){
   scale[1] = 96 / (max[1] - min[1]);
   offset[0] = 64 - scale[0] * ((max[0] + min[0]) / 2);
   offset[1] = 64 - scale[1] * ((max[1] + min[1]) / 2);
-
 }
 
-double getAffine(int x, int y){
-  return (affine[(x * 7) + y]); 
-}
 
 
 void loop() {
+  point = ifs.next(point);
 
-  Serial.println("loop");
-
-  int a = randomAffine();
-
-  double x1 = ((getAffine(a, 0) * point.getX()) + (getAffine(a, 1) * point.getY()) + (getAffine(a, 4)));
-  double y1 = ((getAffine(a, 2) * point.getX()) + (getAffine(a, 3) * point.getY()) + (getAffine(a, 5)));
-
-  if(a == 0){
-    generation++;
-  }
-
-  point.setX(x1);
-  point.setY(y1);
-
-  drawPixel(adjust(point));
+  renderer.draw(adjust(point), 0, 0, 255);
 }
 
 Point adjust(Point input){
   Point output = Point(((input.getX() * scale[0]) + offset[0]), ((input.getY() * scale[1]) + offset[1]));
   return output;
-}
-
-
-int randomAffine(){
-
-  int rand = random(100);
-
-  for(int i = 0; i < affineSize; i++){
-
-    double affineProbability = getAffine(i, 6) * 100;
-
-    if(rand < affineProbability){
-      return i;
-    }
-
-    rand -= affineProbability;
-
-  }
-
-  return affineSize - 1;
-}
-
-void drawPixel(Point drawPoint) {
-
-  //if(drawPoint.getX() >= 0 && drawPoint.getX() < 128 && drawPoint.getY() >= 0 && drawPoint.getY() < 128){
-  renderer.draw(drawPoint, 0, 0, 255);
-  //}
-}
-
-int findColor(int x, int y){
-  int i = 0;
-  for(; i < colorSize && xcolor[i] > 0 && ycolor[i] > 0; i++){
-    if(xcolor[i] == x && ycolor[i] == y){
-      if(color[i] < 255){
-        color[i] = color[i] + 10;
-      }
-      return 255;//color[i];
-
-    }
-  }
-
-  if(i < colorSize){
-    xcolor[i] = x;
-    ycolor[i] = y;
-    return 123;//color[i]++;
-  }
-
-  return 0;
-}
-
-
-
-void updatePixel(int x, int y){
-  if(x >= 0 && x < 128 && y >= 0 && y < 128){
-    renderer.setXY(x, y, x, y);
-    int color = getIncrementColor(x,y);
-    renderer.setPixel(color, 0, 0);
-    renderer.setXY(0,0,128,128);
-  }
-}
-
-int getIncrementColor(int x, int y){
-  return ++colormesh0[x];
 }
 
 

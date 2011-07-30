@@ -112,10 +112,16 @@ void DirectAVRIO::init(){
  
  
 void DirectAVRIO::draw(Point point, byte r, byte g, byte b){
-	setXY(point.getX(), point.getY(), point.getX(), point.getY());
-	setPixel(r,g,b);
-	setXY(0, 0, 128, 128);
-}     
+	if(withinBounds(point.getX()) && withinBounds(point.getY())){
+		setXY(point.getX(), point.getY(), point.getX(), point.getY());
+		setPixel(r,g,b);
+		setXY(0, 0, 128, 128);
+	}
+}    
+
+bool DirectAVRIO::withinBounds(int value){
+	return value > 0 && value < 128;
+} 
      
 void DirectAVRIO::setPixel(byte r,byte g,byte b){
   sendData((r&248)|g>>5);
