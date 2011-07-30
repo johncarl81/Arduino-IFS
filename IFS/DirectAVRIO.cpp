@@ -20,6 +20,8 @@ byte gb;
 DirectAVRIO::DirectAVRIO(){}
 
 void DirectAVRIO::init(){
+
+  DDRD = 0x7C;
         
   cbi(PORTD, CS);
   cbi(PORTD, SDA);
@@ -111,9 +113,9 @@ void DirectAVRIO::init(){
 }
  
  
-void DirectAVRIO::draw(Point point, byte r, byte g, byte b){
-	if(withinBounds(point.getX()) && withinBounds(point.getY())){
-		setXY(point.getX(), point.getY(), point.getX(), point.getY());
+void DirectAVRIO::draw(Point* point, byte r, byte g, byte b){
+	if(withinBounds(point->getX()) && withinBounds(point->getY())){
+		setXY(point->getX(), point->getY(), point->getX(), point->getY());
 		setPixel(r,g,b);
 		setXY(0, 0, 128, 128);
 	}

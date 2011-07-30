@@ -5,14 +5,14 @@ IFS::IFS(double* affine, int affineSize){
 	_affineSize = affineSize;
 }
 
-Point IFS::next(Point input){
+Point* IFS::next(Point* input){
 	int a = randomAffine();
 
-	double x1 = ((getAffine(a, 0) * input.getX()) + (getAffine(a, 1) * input.getY()) + (getAffine(a, 4)));
-    double y1 = ((getAffine(a, 2) * input.getX()) + (getAffine(a, 3) * input.getY()) + (getAffine(a, 5)));
+	double x = ((getAffine(a, 0) * input->getX()) + (getAffine(a, 1) * input->getY()) + (getAffine(a, 4)));
+    double y = ((getAffine(a, 2) * input->getX()) + (getAffine(a, 3) * input->getY()) + (getAffine(a, 5)));
     
-    input.setX(x1);
-    input.setY(y1);
+    input->setX(x);
+    input->setY(y);
     
     return input;
 }

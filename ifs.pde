@@ -1,5 +1,6 @@
 #include <DirectAVRIO.h>
 #include <Point.h>
+#include <PointScreenTransformer.h>
 #include <IFS.h>
 
 
@@ -84,7 +85,14 @@ int affineSize = sizeof(*affine);
 
 DirectAVRIO renderer;
 IFS ifs(affine, affineSize);
-Point point;
+PointScreenTransformer transformer;
+
+Point pointAllocation = Point();
+Point pointAllocation2 = Point();
+
+Point* point = &pointAllocation;
+Point* drawPoint = &pointAllocation2;
+
 double offset[3];
 double scale[3];
 double max[3] = {
@@ -113,49 +121,22 @@ void setup () {
 
   renderer.init();
 
-  setupScale();
+  setupTransformer();
 
   //random seed
   randomSeed(analogRead(0));
 
 }
 
-void setupScale(){
-  for(int i = 0; i < 500; i++){
-    
-    point = ifs.next(point);
-
-    if(point.getX() > max[0]){
-      max[0] = point.getX();
-    }
-    if(point.getY() > max[1]){
-      max[1] = point.getY();
-    }
-    if(point.getX() < min[0]){
-      min[0] = point.getX();
-    }
-    if(point.getY() < min[1]){
-      min[1] = point.getY();
-    }
+void setupTransformer(){
+  for(int i = 0; i < 1000; i++){
+    transformer.train(ifs.next(point));
   }
-
-  scale[0] = 96 / (max[0] - min[0]);
-  scale[1] = 96 / (max[1] - min[1]);
-  offset[0] = 64 - scale[0] * ((max[0] + min[0]) / 2);
-  offset[1] = 64 - scale[1] * ((max[1] + min[1]) / 2);
 }
-
-
 
 void loop() {
   point = ifs.next(point);
-
-  renderer.draw(adjust(point), 0, 0, 255);
+  
+  renderer.draw(transformer.transform(point, drawPoint), 0, 0, 255);
 }
-
-Point adjust(Point input){
-  Point output = Point(((input.getX() * scale[0]) + offset[0]), ((input.getY() * scale[1]) + offset[1]));
-  return output;
-}
-
 

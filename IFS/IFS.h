@@ -7,7 +7,7 @@
 class IFS {
 public:
 	IFS(double* affine, int affineSize);
-	Point next(Point point);
+	Point* next(Point* point);
 private:
 	double getAffine(int x, int y);
 	int randomAffine();

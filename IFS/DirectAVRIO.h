@@ -8,7 +8,7 @@ class DirectAVRIO {
 public:
 	DirectAVRIO();
 	void init();
-	void draw(Point point, byte r, byte g, byte b);
+	void draw(Point* point, byte r, byte g, byte b);
 	void setPixel(byte r,byte g,byte b);
 	void setXY(byte x, byte y, byte dx, byte dy);
 
