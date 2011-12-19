@@ -74,14 +74,8 @@ double kaffine[4 * 7] = {
   0.167, 0.289, -0.289, 0.167, 0.5, 0.289, 0.25,
   0.333, 0, 0, 0.333, 0.667, 0, 0.25};
 
-double* affineTrans[] = {
-  d1affine, d2affine, d3affine, laffine, faffine, triangleaffine, spiralaffine, saffine, taffine, maffine, kaffine};
-int affineSizes[sizeof(affineTrans)/sizeof(double*)] = 
-{
-  sizeof(d1affine), sizeof(d2affine), sizeof(d3affine), sizeof(laffine), sizeof(faffine), sizeof(triangleaffine), sizeof(spiralaffine), sizeof(saffine), sizeof(taffine), sizeof(maffine), sizeof(kaffine)};
-
-double* affine = d1affine;
-int affineSize = sizeof(*affine);
+double* affine = saffine;
+int affineSize = 6;
 
 DirectAVRIO renderer;
 IFS ifs(affine, affineSize);
