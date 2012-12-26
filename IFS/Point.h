@@ -1,7 +1,12 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <WProgram.h>
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 
 class Point {
 public:
